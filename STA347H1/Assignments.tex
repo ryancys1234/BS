@@ -1,0 +1,111 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb}
+\usepackage[margin=.5in]{geometry}
+\usepackage[parfill]{parskip}
+\pagenumbering{gobble}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\p}{\mathbb{P}}
+\newcommand{\V}{\text{Var}}
+
+\begin{document}
+
+\begin{center}
+{\Large STA347H1 - Assignment 1}
+\end{center}
+
+\textbf{1.11:} Let $A_1, A_2, \ldots \subseteq \omega$ and $w \in \Omega$. Define $B_i^w = A_i$ if $w \in A_i$ and $A_i^c$ if $w \notin A_i$. Notice that $\forall A_i$, $w$ either $\in A_i$ or $\notin A_i$. Thus, $\{B_i^w\}_{i=1}^\infty$ are independent. By the definition of $B_i^w$, $\{w\} \subseteq B_1^w, B_2^w, \ldots$, meaning that $\forall n \in \mathbb{N}^+$, $\{w\} \subseteq \cap_{i=1}^n B_i^w$. Then, $\p(\{w\}) \leq \p(\cap_{i=1}^n B_i^w) = \Pi_{i=1}^n \p(B_i^w) = (\frac{1}{2})^n \to 0$ as $n \to \infty$, which contradicts the assumption that $\Omega$ is countable.
+
+\textbf{2.7:}
+\begin{itemize}
+    \item a) $F_X(x) = \p(YZ \leq x) = \p(YZ \leq x|Z = -1)\p(Z = -1) + \p(YZ \leq x|Z = 1)\p(Z = 1)$ by the law of total probability $= \frac{1}{2}(\p(-Y < x) + \p(Y < x)) = \frac{1}{2}(\p(Y > -x) + \p(Y < x)) = \p(Y < x) = F_Y(y)$ since $\p(Y > -x) = \p(Y < x)$ for the normal distribution. Differentiating both sides yields $f_X(x) = f_Y(x)$, so $X \sim \mathcal{N}(0, 1)$.
+
+    Revised: Instead of differentiating, notice that Theorem 2.2.3 implies $X$ and $Y$ have the same distribution.
+    \item b) $\p(|X| = |Y|) = \p(\{X = Y\} \cup \{X = -Y\}) = \p(X = Y) + \p(X = -Y)$ since the sets are disjoint $= \p(YZ = Y) + \p(YZ = -Y) = \p(Z = 1) + \p(Z = -1) = \frac{1}{2} + \frac{1}{2} = 1$.
+    
+    Revised: $\{w \in \Omega: |X(w)| = |Y(w)|\} = \{w \in \Omega: |Z(w)Y(w)| = |Y(w)|\} = \{w \in \Omega: |Z(w)||Y(w)| = |Y(w)|\} = \{w \in \Omega: |Y(w)| = |Y(w)|\} = \Omega \implies \p(|X| = |Y|) = 1$.
+    \item c) Suppose $X$ and $Y$ are independent. Then, for any $A \in \mathcal{B}(\mathbb{R})$ such that $\{0\} \notin A$ and $\p(Y \in A) > 0$, $\p(\{X \in A\} \cap \{Y \in A\}) = \p(\{X \in A\} \cap \{Y \in A\}|Z = 1)\p(Z = 1) + \p(\{X \in A\} \cap \{Y \in A\}|Z = -1)\p(Z = -1) = \frac{1}{2} \p(\{Y \in A\} \cap \{Y \in A\}) + \frac{1}{2} \p(\{-Y \in A\} \cap \{Y \in A\}) = \frac{1}{2} \p(Y \in A) + \frac{1}{2}\p(\varnothing) = \frac{1}{2} \p(Y \in A) = \p(X \in A)\p(Y \in A)$ by assumption. Since $\p(Y \in A) > 0$, this implies $\p(X \in A) = \frac{1}{2}$, but this is a contradiction since $A$ is arbitrary.
+\end{itemize}
+
+\textbf{2.8:} Define $E_n = \{w \in \Omega: X(w) \geq \frac{1}{n}\} \nearrow E = \{w \in \Omega: X(w) > 0\}$, so that $\lim \limits_{n \to \infty} \p(E_n) = \p(\lim \limits_{n \to \infty} E_n) = \p(X > 0) > 0$ by the continuity of probability. Note that $\lim \limits_{n \to \infty} \p(E_n) > 0$ means that $\exists N \in \mathbb{N}$ such that $\forall n \geq N$, $\p(\{X \geq \frac{1}{n}\}) > 0$. The result then follows if $\delta = \frac{1}{N}$.
+
+\textbf{2.9:} Let $A_1, A_2 \in \mathcal{B}(\mathbb{R})$ and define $B_1 = \{x \in \mathbb{R}: f(x) \in A_1\} \in \mathcal{B}(\mathbb{R})$ and $B_2 = \{y \in \mathbb{R}: g(y) \in A_2\} \in \mathcal{B}(\mathbb{R})$. Then, $\p(f(X) \in A_1 \cap g(Y) \in A_2) = \p(X \in \{x \in \mathbb{R}: f(x) \in A_1\} \cap Y \in \{y \in \mathbb{R}: g(y) \in A_2\}\} = \p(X \in B_1 \cap Y \in B_2) = \p(X \in B_1)\p(Y \in B_2)$ by the assumption of independence $= \p(f(X) \in A_1)\p(f(Y) \in A_2)$.
+
+\textbf{2.11:} $X$ and $Y$ are random variables since they map from $\Omega$ to $\{0, 1\} \subseteq \mathbb{R}$. Also, notice that $\p(\{w \in \Omega: X(w) = 1\} \cap \{w \in \Omega: Y(w) = 1\}) = \p(\{w \in \Omega: \I(w \in A) = 1\} \cap \{w \in \Omega: \I(w \in B) = 1\}) = \p(A \cap B) = \p(A)\p(B)$ by assumption $= \p(\{w \in \Omega: \I(w \in A) = 1\})\p(\{w \in \Omega: \I(w \in B) = 1\}) = \p(\{w \in \Omega: X(w) = 1\})\p(\{w \in \Omega: Y(w) = 1\})$. By proposition 1.2.2, this equality also holds for the cases of $X = 0$ and $Y = 1$; $X = 1$ and $Y = 0$; and $X = Y = 0$. Thus, $X$ and $Y$ are independent.
+
+\textbf{3.3:} Notice that $A_n \cap B_n \subseteq A_n \implies \cup_{k=n}^\infty (A_k \cap B_k) \subseteq \cup_{k=n}^\infty A_k \implies \cap_{n=1}^\infty \cup_{k=n}^\infty (A_k \cap B_k) \subseteq \cap_{n=1}^\infty \cup_{k=n}^\infty A_k \implies \limsup \limits_{n \to \infty} (A_n \cap B_n) \subseteq \limsup \limits_{n \to \infty} A_n$. Similarly, $\limsup \limits_{n \to \infty} (A_n \cap B_n) \subseteq \limsup \limits_{n \to \infty} B_n$. Thus, $\limsup \limits_{n \to \infty} (A_n \cap B_n) \subseteq (\limsup \limits_{n \to \infty} A_n) \cap (\limsup \limits_{n \to \infty} B_n)$. When $A_n = B_n$, $\limsup \limits_{n \to \infty} (A_n \cap B_n) = \limsup \limits_{n \to \infty} A_n = (\limsup \limits_{n \to \infty} A_n) \cap (\limsup \limits_{n \to \infty} B_n)$. When $\{A_i\}_i = \{B_j\}_j = \varnothing$ for odd $i$ and even $j$ and $\{B_j\}_j = \{A_k\}_k = \Omega$ for odd $j$ and even $k$, $\limsup \limits_{n \to \infty} (A_n \cap B_n) = \varnothing \subset \Omega = \Omega \cap \Omega = (\limsup \limits_{n \to \infty} A_n) \cap (\limsup \limits_{n \to \infty} B_n)$.
+
+\textbf{3.6:} For $t \in [0, 1]$, construct the sequence $X_1 = \I(t \in [0, 1]), X_2 = \I(t \in [0, \frac{1}{2}]), X_3 = \I(t \in [\frac{1}{2}, 1]), X_4 = \I(t \in [0, \frac{1}{3}]), X_5 = \I(t \in [\frac{1}{3}, \frac{2}{3}])$, and so on. The chance that $X_n = 1$ decreases as $n \to \infty$, so $\{X_n\}_n$ converges in probability; however, $X_n = 1$ for infinity many $n$, so $\{X_n\}_n$ does not converge almost surely.
+
+\textbf{3.7:} $X_n \to X$ a.s. $\iff \p(\lim \limits_{n \to \infty} X_n = X) = \p(\lim \limits_{n \to \infty} (X_n - X) = 0) = 1 \iff (X_n - X) \to 0$ a.s. $X_n \overset{p}{\to} X \iff \forall \varepsilon > 0, \lim \limits_{n \to \infty} \p(|X_n - X| \leq \varepsilon) = \lim \limits_{n \to \infty} \p(|(X_n - X) - 0| \leq \varepsilon) = 1 \iff (X_n - X) \overset{p}{\to} 0$.
+
+\textbf{3.8:} Notice that $\forall \varepsilon > 0$, $\{w \in \Omega: |X_n(w) - a| \geq \varepsilon\} = \{w \in \Omega: |X_n(w) - a_n + a_n - a| \geq \varepsilon\} \subseteq \{w \in \Omega: |X_n(w) - a_n| + |a_n - a| \geq \varepsilon\}$ by the triangle inequality $\subseteq \{w \in \Omega: |X_n(w) - a_n| \geq \varepsilon\} \cup \{|a_n - a| \geq \varepsilon\}$. Thus, by lemma 1.1.11, $\lim \limits_{n \to \infty} \p(|X_n - a| \geq \varepsilon) \leq \lim \limits_{n \to \infty} \big[\p(|X_n - a_n| \geq \varepsilon) + \p(|a_n - a| \geq \varepsilon)\big] = \lim \limits_{n \to \infty} \p(|X_n - a_n| \geq \varepsilon) + \lim \limits_{n \to \infty} \p(|a_n - a| \geq \varepsilon) = 0$ by assumption.
+
+\textbf{3.9:} By Theorem 3.2.7, there exists a subsequence $\{X_{n_k}\}_{n_k}$ such that $X_{n_k} \to X$ a.s. Notice that $\forall n \in \mathbb{N}^+, \exists k \in \mathbb{N}^+$ such that $n_{k} \leq n \leq n_{k+1}$. By monotonicity, $X_{n_{k}} \leq X_n \leq X_{n_{k+1}} \leq X \implies |X_n - X| \leq |X_{n_k} - X|$. Thus, $\forall \varepsilon > 0, \exists m \in \mathbb{N}$ such that $n \geq m \implies |X_{n_k} - X| \leq \varepsilon \implies |X_n - X| \leq \varepsilon$, so $X_n \to X$ a.s.
+
+\textbf{4.3:}
+\begin{itemize}
+    \item Bernoulli: $\E(X) = 0p_X(0) + 1p_X(1) = 0(1 - p) + 1(p) = 1$. $\V(X) = \E(X^2) - \E(X)^2 = (0^2 p_X(0) + 1^2 p_X(1)) - p^2 = p - p^2 = p(1 - p)$.
+    \item Binomial: Since $X \sim \Sigma_{i=1}^n X_i$ where each $X_i \sim$ Bernoulli($p$) and is independent, $\E(X) = \Sigma_{i=1}^n \E(X_i)$ since the sum is finite $= np$ and $\V(X) = \Sigma_{i=1}^n \V(X_i)$ by independence $= np(1 - p)$.
+    \item Poisson: $\E(X) = \Sigma_{x=0}^\infty x\frac{\lambda^x e^{-\lambda}}{x!} = \lambda e^{-\lambda} \Sigma_{x=1}^\infty \frac{\lambda^{x-1}}{(x-1)!} = \lambda e^{-\lambda} \Sigma_{x=0}^\infty \frac{\lambda^x}{x!} = \lambda e^{-\lambda} e^{\lambda}$ by the exponential power expansion $= \lambda$. $\E(X(X-1)) = \Sigma_{x=0}^\infty x(x-1)\frac{\lambda^x e^{-\lambda}}{x!} = \lambda^2 e^{-\lambda} \Sigma_{x=2}^\infty \frac{\lambda^{x-2}}{(x-2)!} = \lambda^2 e^{-\lambda} \Sigma_{x=0}^\infty \frac{\lambda^x}{x!} = \lambda^2 e^{-\lambda} e^{\lambda}$ by the exponential power expansion $= \lambda^2$. $\V(X) = \E(X^2) - \E(X)^2 = \E(X^2 - X) + \E(X) - \E(X)^2 = \lambda^2 + \lambda - \lambda^2 = \lambda$.
+\end{itemize}
+
+\textbf{4.4:}
+\begin{itemize}
+    \item Bernoulli: $\E(e^{\lambda X}) = e^0 p_X(0) + e^\lambda p_X(1) = 1 - p + e^\lambda p$.
+    \item Binomial: Since $X \sim \Sigma_{i=1}^n X_i$ where each $X_i \sim$ Bernoulli($p$) and is independent, by Lemma 4.4.4, $\E(e^{\lambda X}) = \Pi_{i=1}^n \E(e^{\lambda X_i}) = (1 - p + e^\lambda p)^n$.
+    \item Poisson: $\E(e^{tX}) = \Sigma_{x=0}^\infty e^{tx} \frac{\lambda^x e^{-\lambda}}{x!} = e^{-\lambda} \Sigma_{x=0}^\infty \frac{(\lambda e^t)^x}{x!} = e^{-\lambda} \exp(\lambda e^t)$ by the exponential power expansion $= \exp(\lambda (e^t - 1))$.
+\end{itemize}
+
+\textbf{4.7:} The MGF of the normal distribution is $M_{X}(\lambda) = \exp(\mu\lambda + \frac{1}{2}\sigma^2\lambda^2)$ for some $X \sim \mathcal{N}(\mu, \sigma^2)$. By Lemma 4.4.4, for $S = \Sigma_{i=1}^n X_i$, $M_S(\lambda) = \Pi_{i=1}^n M_{X_i}(\lambda) = \Pi_{i=1}^n \exp(\mu\lambda + \frac{1}{2}\sigma^2\lambda^2) = \exp(\Sigma_{i=1}^n (\mu\lambda + \frac{1}{2}\sigma^2\lambda^2)) = \exp(n\mu\lambda + \frac{n}{2}\sigma^2\lambda^2))$. Thus, $S \sim \mathcal{N}(n\mu, n\sigma^2)$.
+
+Revised: $\exp(n\mu\lambda + \frac{n}{2}\sigma^2\lambda^2))$ is the MGF of some $Y \sim \mathcal{N}(n\mu, n\sigma^2)$. Additionally, $\forall \lambda, M_S(\lambda) < \infty$. By Theorem 4.4.3, $S$ and $Y$ have the same distribution.
+
+\textbf{4.10:} Notice that $X \geq x\I(X \geq x)$ $\forall x > 0$, so $0 = \E(X) \geq \E(x\I(X \geq x)) = x\E(\I(X \geq x)) = x\p(X \geq x)$ by the properties of expectation, implying $\p(X \geq x) = 0$. Then, $\p(X > 0) = \p(\cup_{n=1}^\infty \{X \geq \frac{1}{n}\}) \leq \Sigma_{n=1}^\infty \p(X \geq \frac{1}{n}) = 0$, so $\p(X = 0) = \p(X \geq 0) - \p(X > 0) = 1$. Alternatively, suppose that $\p(X > 0) > 0 \iff \exists \varepsilon > 0, \delta > 0$ s.t. $\p(X \geq \delta) = \varepsilon$. Notice that $\E(X) = \E(X\mathbb{I}(X < \delta)) + \E(X\mathbb{I}(X \geq \delta)) \geq \E(X\mathbb{I}(X \geq \delta)) \geq \E(\delta \mathbb{I}(X \geq \delta)) = \delta \p(X \geq \delta) = \delta \varepsilon > 0$, a contradiction.
+
+\textbf{4.14:} Define $Y = \Sigma_{i=1}^N X_i$. By the law of total expectation, $\E(Y) = \E(\E(Y|N)) = \Sigma_{n=1}^\infty \E(Y|N = n)\p(N = n) = \Sigma_{n=1}^\infty (\Sigma_{i=1}^n \E(X_i|N = n))\p(N = n)$ since the inner sum is finite $= \Sigma_{n=1}^\infty (\Sigma_{i=1}^n \E(X_i))\p(N = n)$ by independence $= \Sigma_{n=1}^\infty n\mu\p(N=n) = \mu \Sigma_{n=1}^\infty n\p(N=n) = \mu\E(N) = \mu m$. Notice that $\E_N(\V(Y|N)) = \E_N(\Sigma_{i=1}^N \V(X_i))$ by independence $= \E_N(N\V(X_i)) = \V(X_i)\E_N(N) = \sigma^2 m$ and $\V_N(\E(Y|N)) = \V_N(\Sigma_{i=1}^N \E(X_i|N))$ since the inner sum is finite $= \V_N(\Sigma_{i=1}^N \E(X_i))$ by independence $= \V_N(N\E(X_i)) = \E(X_i)^2\V(N) = \mu^2 v$. The result follows by the law of total variance.
+
+\textbf{4.18:} Define $Y_t = t\I(X > t)$ $\forall t > 0$. Notice that $\I(X > t) = 0$ for large enough $t \implies \p(\lim \limits_{t \to \infty} t\I(X > t) = 0 < X) = 1$. Thus, $Y_n \to 0$ a.s. and $|Y_n| \leq X$ a.s., so by the DCT, $0 = \lim \limits_{t \to \infty} \E(Y_t) = \lim \limits_{t \to \infty} t\p(X > t)$.
+
+\begin{center}
+{\Large STA347H1 - Assignment 2}
+\end{center}
+
+\textbf{5.1:} $\E e^{\lambda S} = e^{\lambda}\p(S = 1) + e^{-\lambda}\p(S = -1) = \frac{1}{2}(e^{\lambda} + e^{-\lambda}) = \frac{1}{2}(1 + \lambda + \frac{\lambda^2}{2!} + \frac{\lambda^3}{3!} + \ldots + 1 - \lambda + \frac{\lambda^2}{2!} - \frac{\lambda^3}{3!} + \ldots) = \frac{1}{2}(1 + 1 + \frac{\lambda^2}{2!} + \frac{\lambda^2}{2!} + \frac{\lambda^4}{4!} + \frac{\lambda^4}{4!} + \ldots) = \Sigma_{n=0}^\infty \frac{\lambda^{2n}}{(2n)!} \leq \Sigma_{n=0}^\infty \frac{\lambda^{2n}}{2^n n!} = \Sigma_{n=0}^\infty \frac{(\lambda^2/2)^n}{n!} = e^{\lambda^2/2}$ since $(2n)! = \Pi_{i=1}^n (2i) \Pi_{i=1}^n (2i - 1) = (2^n n!)\Pi_{i=1}^n (2i - 1) \geq 2^n n!$ for $n \geq 0$. Notice that $\E(Z_n) = \Sigma_{i=1}^n \E(S) = 0$, so by Hoeffding's inequality, $\p(Z \geq t) = \p(Z - \E Z \geq t) \leq \exp(\frac{-2t^2}{\Sigma_{i=1}^n (1 - (-1))^2}) = \exp(\frac{-t^2}{2n})$ for $t > 0$. Finally, $\p(Z \geq 0) = \frac{1}{2} \leq e^0 = 1$, so the relation also holds for $t = 0$.
+
+Revised: Chernoff's inequality can also be used since $\p(Z \geq t) = \p(Z - \E Z \geq t) \leq \inf_{\lambda > 0} M_{Z - \E Z}(\lambda)e^{-\lambda t} = \inf_{\lambda > 0} M_Z(\lambda)e^{-\lambda t} = \inf_{\lambda > 0} \Pi_{i=1}^n M_{S_i}(\lambda)e^{-\lambda t} = \inf_{\lambda > 0} e^{\lambda^2 n/2} e^{-\lambda t} = \exp(\frac{t^2 n}{2n^2} - \frac{t^2}{n}) = \exp(\frac{-t^2}{2n})$ for $t \geq 0$, where the minimum of $\exp(\frac{\lambda^2 n}{2} - \lambda t)$ is achieved at $\lambda = \frac{t}{n}$.
+
+\textbf{5.7:}
+\begin{itemize}
+    \item $p \geq 0$: $\E|X + Y|^p \leq \E|2\max(X,Y)|^p = 2^p \E\max(|X|^p,|Y|^p) \leq 2^p \E(|X|^p + |Y|^p) = 2^p(\E|X|^p + \E|Y|^p)$.
+    \item $p = 0$: $\E|X + Y|^0 = 1 \leq \E|X|^0 + \E|Y|^0 = 2$.
+    \item $p \in (0,1)$: $|X + Y|^p = |X + Y|^{1-(1-p)} = |X + Y||X + Y|^{-(1-p)} \leq |X||X + Y|^{-(1-p)} + |Y||X + Y|^{-(1-p)}$ by the triangle inequality $\leq |X||X|^{-(1-p)} + |Y||Y|^{-(1-p)} = |X|^p + |Y|^p$ since $|X + Y| \geq X$ and $|X + Y| \geq Y$. Alternatively, since $|\frac{X}{X+Y}|, |\frac{Y}{X+Y}| \in [0,1]$, $|\frac{X}{X+Y}|^p + |\frac{Y}{X+Y}|^p \geq |\frac{X}{X+Y}| + |\frac{Y}{X+Y}| \geq |\frac{X}{X+Y} + \frac{Y}{X+Y}|$ by the triangle inequality $= 1 \implies |X|^p + |Y|^p \geq |X + Y|^p$. In both cases, taking the expectation yields the result.
+
+    Revised: The above is not true if either $X < 0$ or $Y < 0$. Instead, notice that $(\frac{|X|}{|X|+|Y|})^p + (\frac{|Y|}{|X|+|Y|})^p \geq \frac{|X}{|X|+|Y|} + \frac{|Y|}{|X|+|Y|} = 1$.
+    \item $p = 1$: $\E|X + Y| \leq \E(|X| + |Y|)$ by the triangle inequality $= 2^0 (\E|X| + \E|Y|)$.
+    \item $p > 1$: Since $|x|^p$ is convex, $|\frac{1}{2}X + \frac{1}{2}Y|^p \leq \frac{1}{2}|X|^p + \frac{1}{2}|Y|^p \implies |X + Y|^p \leq \frac{2^p}{2}(|X|^p + |Y|^p) \implies \E(|X + Y|^p) \leq \E(2^{p-1}(|X|^p + |Y|^p)) = 2^{p-1}(\E|X|^p + \E|Y|^p)$.
+\end{itemize}
+
+\textbf{5.10:} $\forall \varepsilon > 0, \p(|X_n - \E X_n| > \varepsilon) \leq \p(|X_n - \E X_n| \geq \varepsilon) \leq \frac{\V(X_n)}{\varepsilon^2}$ by Chebyshev's inequality $= \frac{1}{\varepsilon^2 \sqrt{n}} \to 0$ as $n \to \infty$. Alternatively, $\E|X_n - \E X_n|^2 = \V(X_n) = \frac{1}{\sqrt{n}} \to 0$ as $n \to \infty$, so $X_n \overset{L^2}{\to} \E X_n$. Both cases imply $X_n \overset{p}{\to} m$.
+
+\textbf{6.1:} $\E(\frac{1}{n}S_n - \E (\frac{1}{n}S_n))^2 = \V(\frac{1}{n}S_n) = \frac{1}{n^2}\V(S_n) = \frac{1}{n^2}\Sigma_{i=1}^n \V(X_i)$ since the $X_i$'s are uncorrelated $= \frac{1}{n}\Sigma_{i=1}^n \frac{\V(X_i)}{n} \leq \frac{1}{n}\Sigma_{i=1}^n \frac{\V(X_i)}{i} \leq \frac{1}{n}\Sigma_{i=1}^\infty \frac{\V(X_i)}{i} \to 0$ as $n \to \infty$ since $\frac{\V(X_i)}{i} \to 0$ as $i \to \infty \implies \Sigma_{i=1}^\infty \frac{\V(X_i)}{i} < \infty$.
+
+Revised: For the last step, $\frac{\V(X_i)}{i} \to 0$ as $i \to \infty \nRightarrow \Sigma_{i=1}^\infty \frac{\V(X_i)}{i} < \infty$ since $\frac{1}{n} \to 0$ but $\Sigma_{n=1}^\infty \frac{1}{n} = \infty$. Instead, use the Cesàro mean theorem: $a_i \to a \implies \frac{1}{n}\Sigma_{i=1}^n a_i \to a$.
+
+\textbf{6.2:} Define $\mathcal{X} = \{(-1)^k k\}_{k=2}^\infty$ and notice that $C > 0$. First, $\E|X_1| = \Sigma_{x\in\mathcal{X}} |x|\p(X_1 = x) = \Sigma_{k=2}^\infty k\p(X_1 = (-1)^k k) = \Sigma_{k=2}^\infty \frac{C}{k\log k} \geq \int_2^\infty \frac{1}{y\log y}dy = \log|\log \infty| - \log|\log 2| = \infty$ since $\Sigma_{k=x}^\infty f(k) \geq \int_x^\infty f(y)dy$ for a positive and decreasing function $f$. Next, $x\p(|X_1| > x) = x\p(\cup_{k=x+1}^\infty \{X_1 = k\}) \leq x\Sigma_{k=x+1}^\infty \p(X_1 = k) = x\Sigma_{k=x+1}^\infty \frac{C}{k^2 \log k} \leq \frac{x}{\log x} \Sigma_{k=x+1}^\infty \frac{C}{k^2} \leq \frac{Cx}{\log x} \int_x^\infty \frac{1}{y^2}dy = \frac{Cx}{\log x} (0 + \frac{1}{x}) = \frac{C}{\log x} \to 0$ as $x \to \infty$. Thus, $\frac{1}{n}S_n - \mu_n \overset{p}{\to} 0$ by the WLLN $\implies \frac{1}{n}S_n \overset{p}{\to} \mu$ since $\frac{(-1)^k}{k^2 \log k}$ is an alternating series converging to 0 and $\mu_n = \E(X_1 \I(|X_1| \leq n)) = \Sigma_{k=2}^n \frac{(-1)^k C}{k^2 \log k} \to$ some $\mu$ as $n \to \infty$.
+
+\textbf{6.7:} Since $\Sigma_{n=1}^\infty \p(X_n \leq \log n) = \Sigma_{n=1}^\infty (1 - \p(X_n > \log n)) = \Sigma_{n=1}^\infty (1 - e^{-\log n}) = \Sigma_{n=1}^\infty (1 - \frac{1}{n}) = \infty$ and $\{X_n \leq \log n\}_n$ are independent, $\p(X_n \leq \log n$ i.o.$) = 1$ by Borel-Cantelli. Similarly, since $\Sigma_{n=1}^\infty \p(X_n \geq \log n) \geq \Sigma_{n=1}^\infty \p(X_n > \log n) = \Sigma_{n=1}^\infty e^{-\log n} = \Sigma_{n=1}^\infty \frac{1}{n} = \infty$ and $\{X_n \leq \log n\}_n$ are independent, $\p(X_n \geq \log n$ i.o.$) = 1$ by Borel-Cantelli. Thus, $\p(X_n = \log n$ i.o.$) = 1 \implies \limsup \limits_{n\to\infty} \frac{X_n}{\log n} = 1$ a.s.
+
+\textbf{7.2:} The characteristic function of $X_n$ is $\varphi_{X_n}(t) = e^{-(\sigma_n t)^2/2}$. By Theorem 7.2.9, $X_n \overset{D}{\to} X \implies \varphi_{X_n}(t) \to \varphi_X(t)$ for all $t \in \mathbb{R}$. Notice that $\varphi_{X_n}(\sqrt{2}) \to \varphi_X(\sqrt{2}) \implies -\log \varphi_{X_n}(\sqrt{2}) = \sigma_n \to \sigma$ for some $\sigma \in [0,\infty]$ since $\varphi_{X_n}(t) \in (0,1] \implies -\log \varphi_{X_n}(t) \in [0,\infty)$. Next, $\sigma = \infty \implies \varphi_{X_n}(t) \to e^{-\infty} = 0$ for all $t \neq 0$, but since $\varphi_{X_n}(0) = 1$, this implies $\varphi_{X_n}$ is discontinuous at $t = 0$. This yields a contradiction, so $\sigma \neq \infty$.
+
+\textbf{7.8:} Let $X_n \sim \mathcal{N}(0,1)$ and $X \sim \mathcal{N}(0,1)$. $X_n \overset{D}{\to} X$ and $X_n \overset{D}{\to} -X$, but $X_n + X_n \not\overset{D}{\to} X - X = 0$.
+
+\textbf{7.11:} $\varphi_{S_n/n}(t) = \Pi_{i=1}^n \varphi_{X_i}(\frac{t}{n})$ by Proposition 7.2.5 $= (\varphi(\frac{t}{n}))^n$ and $\varphi_a(t) = \E(e^{iat}) = e^{iat}$. Notice that $\varphi'(0) = ia \implies \lim \limits_{n\to\infty} \frac{\varphi(t/n)-\varphi(0)}{t/n} = ia \implies \lim \limits_{n\to\infty} n(\varphi(\frac{t}{n}) - 1) = iat \implies (\varphi(\frac{t}{n}))^n = [1 + \frac{n(\varphi(t/n) - 1)}{n}]^n \to \exp[n(\varphi(\frac{t}{n}) - 1)] \to e^{iat}$ as $n \to \infty$ since $(1 + \frac{x}{n})^n \to e^x$ as $n \to \infty$. Thus, $\varphi_{S_n/n}(t) \to \varphi_a(t)$ for all $t \in \mathbb{R}$, so $\frac{S_n}{n} \overset{D}{\to} a$ by Theorem 7.2.9 $\implies \frac{S_n}{n} \overset{p}{\to} a$.
+
+\textbf{10:} Notice that $j^2 = \frac{2j(j+1)}{2} - j = 2\Sigma_{k=1}^j k - \Sigma_{k=1}^j 1 = \Sigma_{k=1}^j (2k - 1)$. Thus, $\E X^2 = \Sigma_{j=0}^\infty j^2 \p(X = j) = \Sigma_{j=1}^\infty j^2 \p(X = j) = \Sigma_{j=1}^\infty \Sigma_{k=1}^j (2k - 1)\p(X = j) = \Sigma_{k=1}^\infty \Sigma_{j=k}^\infty (2k - 1)\p(X = j) = \Sigma_{k=1}^\infty (2k - 1) \Sigma_{j=k}^\infty \p(X = j) = \Sigma_{k=1}^\infty (2k - 1)\p(X \geq k)$.
+
+Revised: Define $i = X(w)\in \mathbb{N}$ and $X_n = \Sigma_{k=1}^n (2k-1)\I(X \geq k)$. $X_n \leq X_{n+1}$ and $\forall n \geq i$, $X_n = \Sigma_{k=1}^i (2k-1) = i^2 = X^2$. By the DCT, $\E X_n = \Sigma_{k=1}^n (2k-1)\p(X \geq k) \uparrow \E X^2$.
+
+\textbf{11:} $F_X(x) = \int_0^x 2ydy = x^2$ for $x \in (0,1)$. $F_{Z_n}(z) = 1 - \p(\sqrt{n}\min[X_1,\ldots,X_n] > z) = 1 - \p(\cap_{i=1}^n \{X_i > z / \sqrt{n}\}) = 1 - \Pi_{i=1}^n \p(X_i > z / \sqrt{n})$ since the $X_i$'s are independent $= 1 - [\p(X_i > z / \sqrt{n})]^n = 1 - (1 - F_X(z / \sqrt{n}))^n = 1 - (1 - \frac{z^2}{n})^n$ for $z \in (0,\sqrt{n})$. As $n \to \infty$, $1 - (1 - \frac{z^2}{n})^n \to 1 - e^{-z^2}$ for $z > 0$, which is the CDF of some $Z^2 \sim$ Exponential(1) or $Z \sim$ Rayleigh($\frac{1}{\sqrt{2}})$. The PDF of $Z$ is $f_Z(z) = \frac{d}{dz} (1 - e^{-z^2}) = 2ze^{-z^2}$ for $z > 0$.
+
+\end{document}

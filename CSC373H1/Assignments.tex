@@ -1,0 +1,360 @@
+\documentclass[11pt]{article}
+\usepackage{algorithm, algpseudocode, amsmath, amssymb, amsthm, fullpage, mathtools, parskip}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\begin{document}
+
+\begin{center}
+{\Large CSC373H1 - Assignment 1}
+\end{center}
+
+\textbf{Question 3}
+
+a) The algorithm increments in employees and assigns the first available task with skill demand $\leq$ the current employee's skill, if it exists. If not, the algorithm moves to the next employee.
+
+\begin{algorithm}[H]
+\caption{Task Assignment}
+\begin{algorithmic}[1]
+\State Sort the employees in a non-decreasing order of their skill level so that $s_1 \leq \ldots \leq s_n$
+\State Sort the tasks in a non-decreasing order of their minimum skill requirement so that $d_1 \leq \ldots \leq d_m$
+\State $j \gets 1$ \Comment Increments the tasks
+\For{Employee $i=1,\ldots,n$}
+\If{$d_j \leq s_i$}
+    \State Assign task $j$ to employee $i$
+    \State $j \gets j + 1$
+\EndIf
+\If{$j > m$} \Comment No more tasks left
+    \State Break the $for$ loop \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+b) The worst-case runtime is $O(n\log n + m\log m)$. Sorting the employees takes $O(n\log n)$ time, while sorting the tasks takes $O(m\log m)$ time. For each of the $n$ employees, a constant amount of work is done.
+
+c) Define $G_i$ and $O_i$ to be the sets of tasks assigned to employees $1,\ldots,i$ by the greedy (GRD) and optimal (OPT) approaches respectively. Since GRD considers the employees in order, assume WLOG that OPT also does this (see Lemma). We proceed by induction to show that $\forall i\in\{1,\ldots,n\},|G_i|=|O_i|$, where $|\cdot|$ denotes set size. This implies $|G_n|=|O_n|$, so GRD is as optimal as OPT.
+
+Base case ($i=1$): Assume both OPT and GRD has not considered any employee after 1 at this point. Consider two cases:
+
+\begin{itemize}
+    \item Case ($\exists$ task $j$ s.t. $d_j\leq s_1$): OPT assigns employee 1 to such a task. For GRD, this case implies that $d_1\leq s_1$, so it assigns employee 1 to task 1. Thus, $|G_i|=|O_i|=1$.
+    \item Case ($\forall$ tasks $j$, $d_j > s_1$): Both OPT and GRD do not assign employee 1 to a task, so $|G_i|=|O_i|=0$.
+\end{itemize}
+
+Induction step ($i>1$): Assume $|O_{i-1}|=|G_{i-1}|$ and both OPT and GRD has not considered any employee after $i$ at this point. Suppose for contradiction that $|O_i|>|G_i|$, which means $O_i$ includes a task $j$ assigned to employee $i$, but that $G_i$ does not assign employee $i$ to any task. Define $A_i=\{\text{tasks } j: d_j\leq s_{i}\}\setminus O_{i-1}$ to be the set of available tasks with demands $\leq s_i$, and similarly $B_i=\{\text{tasks } j: d_j\leq s_{i}\}\setminus G_{i-1}$. Task $j\in A_i$ but $\notin B_i$ since GRD must have assigned it to some other employee before employee $i$. Note that $|A_i|=|B_i|$ since $|O_{i-1}|=|G_{i-1}|$ and both OPT and GRD has not considered any employee after $i$. This means $B_i$ must contain an additional available task with demand $\leq s_i$ for the sets to be equal in size. Then, GRD can just assign employee $i$ to this task, yielding a contradiction. We conclude $|O_i|=|G_i|$, as needed.
+
+Lemma: Define OPT as the optimal approach that considers the employee in order and A as another approach that does not follow this order but is otherwise as similar to OPT as possible. We show OPT is at least as optimal as A. Since A does not follow the order, there must be $\geq 1$ pair of employees $x,y$ s.t. it considers $y$ before considering $x$ and $x<y$. Note $x<y\implies s_x\leq s_y$.
+
+\begin{itemize}
+    \item If A assigns $y$ to task $m$ and $x$ to task $n$, this implies either
+    \begin{itemize}
+        \item $d_m,d_n$ both $\leq s_x,s_y$, in which case OPT might make the same or opposite assignments depending on the order of $m$ and $n$, or
+        \item $d_n\leq s_x$ and $d_m \in (s_x,s_y]$, in which case OPT would make the same assignments.
+    \end{itemize}
+    \item If A assigns $y$ to task $m$ and leaves $x$ unassigned, this implies either
+    \begin{itemize}
+        \item $d_m\leq s_x$, in which case OPT would assign $x$ to $m$ and leave $y$ unassigned instead, or
+        \item $d_m\in (s_x,s_y]$, in which case OPT would make the same choice.
+    \end{itemize}Notice however that for the first sub-case, if there is an available task $n$ s.t. $s_x < d_n \leq s_y$, OPT would also assign $y$ to $n$, meaning it has 1 more task assigned than A.
+    \item If A leaves both $x,y$ unassigned, this implies there are no available tasks $m$ s.t. $d_m\leq s_y$, in which case OPT would make the same choice.
+\end{itemize}
+
+In all cases, the number of tasks assigned to each pair of employees by A is $\leq$ that of OPT.
+
+\textbf{Question 4}
+
+a) After each iteration $d$, the corresponding project $d$ should not have any employee who feels inferior since the algorithm should have moved all such employees to project $d+1$. Since the algorithm stops when the inferiority-freeness constraint holds for a newly-created project $k$, it must hold for all previously created projects as well.
+
+b) Base case: Suppose $k=2$. Since $i_2$ feels inferior to $i_1$, any solution must assign $i_2$ to project 2 while keeping $i_1$ in project 1.
+
+Inductive step: Let $k>2$, and assume any solution assigns $(i_1,\ldots,i_{k-1})$ to $k-1$ different projects since $s_1>\ldots>s_{k-1}$ and $t_1<\ldots<t_{k-1}$. Note that $i_{k-1}$ feels inferior to $i_k$ implies any employee before $i_{k-1}$ must also feel inferior to $i_k$, since $s_1>\ldots>s_{k-1}>s_k$ and $t_1<\ldots<t_{k-1}<t_k$. Thus, $i_k$ cannot be assigned to the same project as any other employee before it. This means any solution must assign $i_k$ to a new project $k$, and so any solution must assign $(i_1,\ldots,i_k)$ to $k$ different projects.
+
+c) Consider an arbitrary set of employees, and assume it is sorted as in part d. If it has $\geq 1$ sequence s.t. each employee feels inferior to the previous, it must have a longest such sequence. (Notice the sequence does not have to be contiguous.) Define this longest sequence as $S=(i_1,\ldots,i_k)$ for some $k\leq n$. By part b, any solution must have at least $k$ projects. Notice that the greedy solution (GRD) uses exactly $k$ projects for this set. This is because for every employee:
+
+\begin{itemize}
+    \item By the Lemma, the employee does not belong to S $\implies$ there must exist $\geq 1$ employee in S where neither employee feels inferior to the other. So, GRD can assign it to the same project as $\geq 1$ employee in S without it or the other feeling inferior. This does not affect the overall number of projects.
+    \item If GRD cannot assign the employee in this manner, by the contrapositive of the Lemma, it must belong to S. GRD, which produces a feasible solution by part a, already splits S up between $k$ projects by part b.
+\end{itemize}We conclude that $\#$ of projects needed by GRD $=k\leq\#$ of projects needed by any solution.
+
+Lemma: We show that an employee $i\notin S \implies \exists j\in S$ where neither $i$ nor $j$ feels inferior to the other. Suppose for contradiction that $i\notin S$ but $\forall j\in S$, either $i$ feels inferior to $j$ or vice versa.
+
+\begin{itemize}
+    \item If all $j$'s feel inferior to $i$ or $i$ feels inferior to all $j$'s, $i$ must be at the beginning or end of S by definition, a contradiction.
+    \item If $\exists j\in S, s_j<s_i \land t_i<t_j$ and $\exists j'\in S, s_{j'}>s_i \land t_i>t_{j'}$, then $s_j<s_i<s_{j'} \land t_{j'}<t_i<t_j$, and $i$ must be nested within S by definition, a contradiction.
+    \item If the previous cases cannot be reached, then there must exist an employee $j\in S$ where neither $i$ nor $j$ feels inferior to the other, a contradiction.
+\end{itemize}
+
+d) For the algorithm, since it sorts the employee twice, it only needs to compare each adjacent pair of employees.
+
+\begin{algorithm}[H]
+\caption{Project Division}
+\begin{algorithmic}[1]
+\State Sort the employees in order of their start time so that $s_1 \leq \ldots \leq s_n$
+\State If there are employees sharing a start time, sort them in non-decreasing order of their finish time
+\State Initialize an empty set Project 1 as a linked list and add the employees in order
+\State CurrentProject $\gets$ Project 1
+\State InferiorityExists $\gets$ $True$
+\State $d \gets 2$
+\While{InferiorityExists is $True$}
+\State Initialize an empty set Project $d$ as a linked list
+\State PreviousStart $\gets$ start time of first employee in CurrentProject
+\State PreviousEnd $\gets$ finish time of first employee in CurrentProject
+\For{Employee $e_i$ in CurrentProject} \Comment Iterating through the linked list
+\If{PreviousStart $< s_i$ and PreviousEnd $> t_i$}
+    \State Add $\{e_i\}$ to Project $d$
+    \State Remove $\{e_i\}$ from CurrentProject
+\Else
+    \State PreviousStart $\gets s_{i}$
+    \State PreviousEnd $\gets t_{i}$
+\EndIf
+\EndFor
+\If{Project $d$ is $\emptyset$}
+\Comment Only happens when CurrentProject is inferiority-free
+\State InferiorityExists $\gets False$
+\Comment Breaks the while loop
+\Else
+    \State CurrentProject $\gets$ Project $d$
+    \State $d \gets d + 1$
+\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+The algorithm runs in $O(n^2)$ time since there can be at most $n$ projects and $n$ iterations in the while loop. For each project, the algorithm loops over all $\leq n$ employees assigned to it and performs a constant amount of work. Also, sorting the employees takes $O(n\log n)$ time, and moving employees from one project to another takes $O(n)$ time overall due to the linked list implementation.\\
+
+\begin{center}
+{\Large CSC373H1 - Assignment 2}
+\end{center}
+
+\textbf{Question 4}
+
+a) The network instance has a source $S$ and sink $T$. It has a node $(i,t)$ for each city $i\in V$ and for each $t\in \{0,\ldots,D\}$, which represent the cities at different times. Consider each $t$ to be a layer.
+
+For each edge $i\to j \in E$ and $t\in \{0,\ldots,D-1\}$, there is an edge between nodes $(i,t)$ and $(j,t+1)$ with capacity $c_{i,j}$. Also, for each city $i\in V$ and $t\in \{0,\ldots,D-1\}$, there is an edge between $(i,t)$ and $(i,t+1)$ with capacity $P$.
+
+Connect $S$ to $(a,0)$ and $T$ to $(b,D)$, both with a capacity of $P$. For each $i\in V\setminus\{b\}$, connect $T$ to $(i,D)$ with capacity 0. This is to ensure that Ford-Fulkerson doesn't send any flow through these nodes to $T$.
+
+If the amount of flow into $T$ is $P$, the plan is feasible within time $D$, and infeasible otherwise.
+
+b) We use the function BinSearch, which will call Helper. Helper attempts to find a solution with a given flow using Ford-Fulkerson; it returns the graph if true, and false otherwise. In BinSearch, we repeat calls to helper with input sizes $2^k$ for $k$ from 1 to some $i$ such that $2^i$ is the first power of 2 $\geq D'$, the smallest feasible $D$. Then, we perform a binary search on the interval $(2^{i-1},2^i]=(2^{\ceil{\log D'}-1}, 2^{\ceil{\log D'}}]$ since $D'$ must lie in it. For each iteration of the search, Helper creates a new graph and checks if a flow of $P$ is feasible.
+
+% Helper is also responsible for building the graph network and modifying it throughout the calls. In particular, the first call to Helper creates the global network, and for each subsequent increase in the power of 2, Helper adds the new layers of nodes and edges up to the new power. They also change the edges to $T$ to point from the last added layer. If $i=1$ is feasible, BinSearch returns it. When the second while loop of BinSearch is reached, $D\leq 2^i$, meaning we don't need to create more nodes or edges, and we now consider two cases:
+
+% \begin{itemize}
+%     \item $D>d$: Since we have to consider the layers up to $D$ and we only considered $d$ layers previously, we restore the initial capacities of edges between layers $d$ and $d+1$ since they must have been set to 0.
+%     \item $D<d$ Since we only consider the layers up to $D$ and we considered $D$ layers previously, we don't run Ford-Fulkerson on any layers after $D$, so we set the capacities of edges between layers $D$ and $D+1$ to 0.
+% \end{itemize}
+
+% In both cases, we modify the edges to $T$ so that they only point from the new layer $D$.
+
+\begin{algorithm}[H]
+\caption{Binary search for the smallest feasible $D$}
+\begin{algorithmic}[1]
+\Function{BinSearch}{$G,P$}
+\State $i=1$
+\While{Helper($G,P,2^i$) is $Null$} \Comment{Helper is on next page} \State $i \gets i+1$ \EndWhile
+\If{$i=1$} \State Return 1 \EndIf
+\State low $\gets 2^{i-1}$
+\State high $\gets 2^i$
+\While{low $\neq$ high - 1}
+\State mid $\gets$ (low + high) / 2
+\If{Helper($G,P,$ mid) is not $Null$} \State high $\gets$ mid
+\Else \State low $\gets$ mid
+\EndIf
+\EndWhile\\
+\Return{high}
+\Comment{High is always the smallest D upon termination. This is proved below.}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+We show that BinSearch finds $D'$. For the second while loop, the precondition is that $i>1$ since $i=1$ is addressed in the if statement on line 6. $i>1\implies 2^i>2^{i-1}+1$, so the loop runs at least once. We prove its correctness as follows:
+
+Loop invariant for iteration $k$ of the second while loop ($LI_k$): high is feasible (i.e., Helper(high) is not null) $\land$ low is not feasible $\land$ $\text{high}-\text{low}$ is a power of 2.
+
+\begin{itemize}
+    \item Base case: $LI_0$ holds since by the first while loop, Helper($2^i$) is not null and Helper($2^{i-1}$) is null. $2^i-2^{i-1}=2^{i-1}$, which is a power of 2.
+    \item Assume $LI_k$ and consider iteration $k+1$. If Helper(mid) is not null, high = mid is feasible, while low remains infeasible by $LI_k$. If Helper(mid) is null, low = mid is infeasible, while high remains feasible by $LI_k$. Also, $\text{high}-\text{mid}=\text{high}-\frac{\text{high}+\text{low}}{2}=\frac{\text{high}-\text{low}}{2}$, and similarly for $\text{mid}-\text{low}$. Since $\text{high}-\text{low}$ is a power of 2 by $LI_k$, $\frac{\text{high}-\text{low}}{2}$ is also. Thus, $LI_{k+1}$ holds.
+\end{itemize}
+
+The second while loop terminates since by $LI$, the size of (low, high] is a power of 2, and it is halved in each iteration. This means (low, high] will eventually have a size of 1, which corresponds to $\text{low}=\text{high}-1$, the termination requirement. When the loop terminates, by the $LI$, high is feasible and $\text{low}=\text{high}-1$ is infeasible, meaning that high $=D'$ is returned, as needed.
+
+% \begin{algorithm}[H]
+% \caption{Helper function to create the network}
+% \begin{algorithmic}[1]
+% \Function{Helper}{$G,P,D$}
+% \If{$N$ is $null$}
+% \State Create a global network $N$ to store all nodes and edges in
+% \State Create $S,T\in N$
+% \State Create all nodes and edges up to $t=D$ as described in (a)
+% \State $d\gets D$ \Comment{A global variable that keeps track of the last layer of $N$ previously looked at}
+% \ElsIf{$D>d$}
+% \If{nodes and their edges don't exist for some $t\in\{d+1,\ldots,D\}$}\\
+% \Comment{This part only runs in BinSearch's first while loop}
+% \State Create them for these $t$ as described in (a)
+% \State Create edges $(i,d)\to (j,d+1)$ with capacity $c_{ij}$ for $i\to j \in E$
+% \State Create edges $(i,d)\to (i,d+1)$ with capacity $P$ for $i\in V$
+% \Else
+% \State Change the capacities of edges $(i,D)\to (j,D+1)$ for $i\to j\in E$ to $c_{ij}$
+% \State Change the capacities of edges $(i,D)\to (i,D+1)$ for $i\in V$ to $P$
+% \EndIf
+% \State Change the $(i,d)\to T$ edges to be $(i,D)\to T$ for $i\in V$ with same capacities
+% \ElsIf{$D<d$}
+% \State Change the capacities of edges $(i,D)\to (j,D+1)$ for $i\to j\in E$ to 0
+% \State Change the capacities of edges $(i,D)\to (i,D+1)$ for $i\in V$ to 0
+% \State Change the $(i,d)\to T$ edges to be $(i,D)\to T$ for $i\in V$ with same capacities
+% \EndIf
+% \State $d\gets D$ \Comment{Updates $d$ to $D$ since $D$ is the last layer we've just looked at}
+% \State Compute a maximum flow $f$ in the above instance with Ford-Fulkerson
+% \If{$f=P$} \State return the constructed network
+% \Else \State return $Null$ 
+% \EndIf
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Helper function to create the network}
+\begin{algorithmic}[1]
+\Function{Helper}{$G,P,D$}
+\State Create $S,T$
+\For{$t=0,\ldots,D$}
+\For{$i\in V$}
+\State Create node $(i,t)$
+\If{$t>0$} \State Create edge $(i,t-1)\to(i,t)$ with capacity $P$
+\EndIf
+\EndFor
+\EndFor
+\For{$(i,j)\in E$}
+\For{$t=0,\ldots,D-1$}
+\State Create edge $(i,t)\to(j,t+1)$ with capacity $c_{i,j}$
+\EndFor
+\EndFor
+\For{$i\in V$}
+\State Create edge $(i,D)\to T$ with capacity 0
+\EndFor
+\State Change edge $(b,D)\to T$ to capacity $P$
+\State Create edge $S\to(a,0)$ with capacity $P$
+\State Compute a maximum flow $f$ in the above instance with Ford-Fulkerson
+\If{$f=P$} \State return the constructed network
+\Else \State return $Null$ 
+\EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+We show that a maximum flow of $P$ is equivalent to a feasible $D$.
+
+($\implies$) Take any flow $P$, which is the maximum flow that $S$ can send out and $T$ can receive. We want to prove that $D$ is feasible. Since the only edge to $T$ with non-zero capacity is $(b,D)\to T$, it must be saturated with flow $P$. By conservation of flow, $(b,D)$ must be receiving $P$ flow for it to send it to $T$. This means every part of this flow passes through $(a,0)$ and $(b,D)$ along some $s-t$ path, which is length $D$ if disregarding $S$ and $T$ since edges are only between nodes at different $t$. This means $P$ people can travel to $b$ in $D$ steps of 1 unit time each, meaning $D$ is a feasible deadline.
+
+($\impliedby$) Assume $D$ is feasible. We want to show that there is a valid flow $P$ in the network described, which is the maximum possible. Notice:
+
+\begin{itemize}
+    \item Since the only edge to $T$ with non-zero capacity is $(b,D)\to T$, all flow must eventually arrive at $(b,D)$, which itself sends $P$ flow.
+    \item All edge capacities are the same as in $G$. Edges between the same cities at different times represent people who are waiting and have capacity $P$ (each city can hold $P$ people).
+    \item The length of any path from $(a,0)$ to $(b,D)$ is $D$ since edges are only between nodes at different $t$ (i.e., edges are always forward).
+\end{itemize}
+
+By the above and since $D$ is feasible, a flow $P$ sent from $S$ can take the same actions as in the original schedule, moving in a forward edge of the network for each increment of time, and arrive at $(b,D)$. Moreover, conservation of flow is respected since in the original schedule, the number of people going into or staying at a city at some $t$ is the same as the number leaving or staying at $t+1$. Thus, there is a valid and maximum flow of $P$ in the network.
+
+c) Define $n=|V|,m=|E|$. Note that every graph $G$ has $\geq$ one $a-b$ path and its edge capacities are all $\geq 1$. We can send each person into the graph individually with no spaces in between, like a queue. In this way, the last person must be free to move out of node $a$ at time $P+1$ after all preceding people have left $a$. Since this last person need only travel for $\leq n-1$ nodes before reaching $b$, which would take time $n-1$, every graph $G$ needs at most $P+1+n-1=P+n$ time for all people to arrive at $b$. Thus, $D'\leq P+n$.
+
+% $O \Big( (\log D')(n+m)(D'+P) \Big) = O \Big( (\log (P+n))(n+m)(P+n) \Big)$
+% $O \Big( (\log D')(n+m)P + (n+m)D' \Big) = O \Big( (\log(P+n))(n+m)P + (n+m)(P+n) \Big)$
+
+The overall runtime of BinSearch is $O((\log D')(n+m)D'P)=O \Big( (\log(P+n))(n+m)(P+n)P \Big)$, since:
+
+\begin{itemize}
+    \item The first while loop iterates over powers of 2 and stops at the smallest such power $\geq D'$, meaning that it runs for $\ceil{\log D'}\in O(\log D')$ steps. Each call to Helper calls Ford-Fulkerson, which is $O((n+m)D'P)$ since the maximum capacity is $P$ and there are $2^{\ceil{\log D'}}\approx D'$ layers of nodes and edges. Also, the loops at lines 3, 11, and 16 in Helper are $O(D'n)$, $O(D'm)$, and $O(n)$ respectively. In total, the first while loop of BinSearch is in $O((\log D')(n+m)D'P)$.
+    % At the end of the loop, a total of $2^{\ceil{\log D'}}\in O(D')$ layers have been created, where each layer has $n$ nodes and $m$ edges, so $O((n+m)D')$. Creating $S,T$ is $O(1)$ while creating the edges pointing to $T$ is $O(n)$. Overall, the first while loop is in $O((\log D')(D'n+D'm)P + (n+m)D')=O((\log D')(n+m)D'P)$.
+    \item The second while loop performs binary search over the space $(2^{\ceil{\log D'}-1}, 2^{\ceil{\log D'}}]$, which has size $2^{\ceil{\log D'}-1}$, meaning that it runs for around $O(\log(2^{\ceil{\log D'}-1}))=O(\log D')$ iterations. Each iteration of the second while loop runs Helper, which has the same runtime as noted above. In total, the second while loop of BinSearch is $O((\log D')(D'n+D'm)P)$.
+    % \begin{itemize}
+    %     \item will not create new nodes,
+    %     \item will change the $n$ edges pointing to $T$,
+    %     \item changes the capacities of $m$ edges between layers $d$ and $d+1$ if $D>d$, or between layers $D$ and $D+1$ if $D<d$.
+    % \end{itemize}
+    % For each call to Helper, the above actions take $O(n+m)$ time. Also, each call to Helper calls Ford-Fulkerson. Overall, the second while loop is in $O((\log D')(n+m)+(\log D')(n+m)D'P)=O((\log D')(n+m)D'P)$.
+    \item All other operations are $O(1)$.\\
+\end{itemize}
+
+\begin{center}
+{\Large CSC373H1 - Assignment 3}
+\end{center}
+
+\textbf{Question 2}
+
+a) Define $w_i=1$ if worker $i$ is hired and $0$ otherwise. The total cost is then $\sum_{i=1}^n c_i w_i$ and the program is \begin{align*}
+    \text{minimize }\sum_{i=1}^n c_i w_i\\
+    \text{s.t. }\sum_{i:s_i\leq a<t_i} w_i &\geq 1\\
+    \sum_{i:s_i\leq t_j<t_i} w_i &\geq 1 \text{, }\forall j \text{ s.t. } a<t_j<b\\
+    w_i &\in\{0,1\}\text{, }\forall i=1,\ldots,n.
+\end{align*}The first constraint enforces that at least 1 worker who delivers the food from position $a$ is hired. The second constraint enforces that for every worker $j$ who stops at/after $a$ but before reaching $b$, regardless of whether they are hired or not, we must hire $\geq 1$ other worker $i$ who starts at/before $t_j$ and who goes even closer towards $b$. The third constraint enforces that $w_i$ is binary and non-negative.
+
+On top of constraints 1 and 3, each worker has at most $n-1$ versions of constraint 2, one for every other worker. This means $\leq n+1$ constraints in total for each worker and $O(n^2)$ constraints overall, which is polynomial for $n$ workers.
+
+b) We prove a one-to-one correspondence between solutions of the original problem and the linear program. By proving this, we conclude that any minimum value obtained by the program must be the optimal solution for the problem.
+
+Take any (not necessarily optimal) solution to the original problem. By assumption, there is a set of hired workers $S$ s.t. $[a,b]\subseteq \bigcup_{i\in S} [s_i,t_i]$ (since they can transport the food from $a$ to $b$). Set $w_i=1$ for $i\in S$ and $w_i=0$ for $i\notin S$. Note there must be a worker $j$ who delivers the food out of $a$, i.e. $a\in [s_j,t_j)$, so constraint 1 is met. Now, for any worker $j$ s.t. $t_j\in (a,b)$, hired or not, it must be that $t_j\in [s_i,t_i)$ for another hired worker $i$. If this were not so, $t_j$ would lie in a subset of $[a,b]$ not covered by the stretch of any hired worker, i.e. $t_j\notin \bigcup_{i\in S} [s_i,t_i]$, which implies $t_j\notin (a,b)$ (a contradiction). Then, constraint 2 is met, so any feasible solution of the original problem can be converted into an instance of the linear program.
+
+Take any instance of the linear program. By constraint 1, we hire a worker $j$ who can deliver the food out of $a$, i.e. $w_j=1$ and $a\in [s_j,t_j)$. For every worker $j$ with $t_j\in (a,b)$, we hire $\geq 1$ other worker who could pick up the food at $t_j$ and deliver it to a point closer to $b$. This other worker must exist since constraint 2 guarantees a worker $i$ s.t. $w_i=1$ and $s_i\leq t_j<t_i$ for such a $j$. Thus, we are able to hire a subset of workers who can deliver the food from $a$ to $b$ since
+
+\begin{itemize}
+    \item The first hired worker who delivers the food out of $a$ is counted as a $j$ in constraint 2, so another hired worker will pick the food up from them.
+    \item For the last $j$ in constraint 2, i.e. the $j$ with the latest $t_j\in (a,b)$, we hire another worker $i$ who picks the food up from them. Since $s_i\leq t_j<t_i$ and $t_j$ is the latest $t\in (a,b)$, $t_i\notin (a,b)$, meaning $s_i<b\leq t_i$. Thus, $i$ can deliver the food to $b$, as required.
+    \item Every hired worker with $t$ in between the previous two workers satisfy constraint 2, so there will always be another worker who can pick the food up from them.
+\end{itemize}
+
+Then, there is a one-to-one correspondence between any instance of the linear program and feasible solution of the original problem. This means that minimizing the linear program yields the optimal solution for the problem.\\
+
+\begin{center}
+{\Large CSC373H1 - Assignment 4}
+\end{center}
+
+\textbf{Question 1}
+
+a) For any $c\geq 1$, fix $B>c+c^2$. Suppose there are only proposals 1 and 2, where $x_1=c,y_1=1+c$ and $x_2,y_2=B$. Only one proposal can be picked by any algorithm since $\sum_{i\in\{1,2\}} x_i=B+c>B$. ALG picks proposal 1 since $\frac{y_1}{x_1}=\frac{1+c}{c}>\frac{y_2}{x_2}=\frac{B}{B}=1$. OPT picks proposal 2 since $y_2=B>c+c^2\geq y_1=1+c$. Profit(ALG) $=1+c<\frac{B}{c}=\frac{1}{c}$ Profit(OPT) since $B>c+c^2$, as desired.
+
+b) Assume that $k<n$, so project $k+1$ exists. Define $\epsilon=\frac{B-\sum_{i=1}^k x_i}{x_{k+1}}$, which $\in[0,1)$ since $\sum_{i=1}^k x_i+x_{k+1}>B$. Define OPT as the optimal solution with only an integral number of projects. Define OPT' as the solution which extends OPT by spending its remaining budget to pick a fraction of a project.
+
+Consider a solution $S$ that sorts the projects as in part (a) and picks $\{1,\ldots,k\}$ and an $\epsilon$-fraction of $k+1$, s.t. $\sum_{i=1}^k x_i+\epsilon x_{k+1}=B$. By Lemmas 1 and 2, this is the optimal solution if $B$ is to be spent entirely. Then, Profit(S) $\geq$ Profit(OPT') $\geq$ Profit(OPT). From this, $2\max(\sum_{i=1}^k y_i,y_{k+1})\geq\sum_{i=1}^k y_i+y_{k+1}>\sum_{i=1}^k y_i+\epsilon y_{k+1}=$ Profit(S) $\geq$ Profit(OPT). Since the modified algorithm picks $\max(\sum_{i=1}^k y_i$, $y_{k+1})$, it achieves a 2-approximation.
+
+\textbf{Lemma 1:} Replacing any subset of the projects chosen by $S$ with later projects cannot increase the total profit. Assume $\{1,\ldots,n\}$ are sorted as in part (a). Define $A\subseteq\{1,\ldots,k+1\}$ as the set of projects to be replaced, $C\subseteq\{k+2,\ldots,n\}$ as their replacement, and $\alpha_j\in(0,1]$ as the fraction of $j\in C$ to include. Note that
+
+\begin{itemize}
+    \item $\forall i\in A, \dfrac{y_i}{x_i}\geq\dfrac{y_{k+1}}{x_{k+1}}$, so $\sum_{i\in A} y_i\geq\dfrac{y_{k+1}}{x_{k+1}}\sum_{i\in A} x_i$, and
+    \item $\forall j\in C,\alpha_j\dfrac{y_j}{x_j}\leq\alpha_j\dfrac{y_{k+1}}{x_{k+1}}$, so $\sum_{j\in C} \alpha_jy_j\leq \dfrac{y_{k+1}}{x_{k+1}}\sum_{j\in C} \alpha_jx_j$.
+\end{itemize}
+
+If $k+1\notin A$:
+
+\begin{itemize}
+    \item $\sum_{j\in C} \alpha_jx_j \leq\sum_{i\in A} x_i$, or else the projects in $C$ would not fit in the spaces in the budget left by removing $A$.
+    \item Thus, $\sum_{j\in C} \alpha_jy_j\leq \dfrac{y_{k+1}}{x_{k+1}}\sum_{j\in C} \alpha_jx_j\leq \dfrac{y_{k+1}}{x_{k+1}}\sum_{i\in A} x_i\leq \sum_{i\in A} y_i$, which is the total profit of A.
+\end{itemize}
+
+If $k+1\in A$:
+
+\begin{itemize}
+    \item $\sum_{j\in C} \alpha_jx_j \leq\sum_{i\in A\setminus\{k+1\}} x_i + \epsilon x_{k+1}$, or else the projects in $C$ would not fit in the spaces in the budget left by removing $A$.
+    \item Thus, $\sum_{j\in C} \alpha_jy_j\leq \dfrac{y_{k+1}}{x_{k+1}}\sum_{j\in C} \alpha_jx_j\leq \dfrac{y_{k+1}}{x_{k+1}}(\sum_{i\in A\setminus\{k+1\}} x_i + \epsilon x_{k+1})\leq \sum_{i\in A\setminus\{k+1\}} y_i + \dfrac{y_{k+1}}{x_{k+1}}(\epsilon x_{k+1}) = \sum_{i\in A\setminus\{k+1\}} y_i + \epsilon y_{k+1}$, which is the total profit of A.
+\end{itemize}
+
+\textbf{Lemma 2:} Define $\alpha=\dfrac{B-\sum_{i\in\{1,\ldots,k+1\}\setminus\{j\}}x_i}{x_{j}}$ for $j<k+1$. If $S$ instead picks the entire project $k+1$ and only picks an $\alpha$-fraction of project $j$, the total profit cannot increase. This is since \begin{align*}
+    \frac{y_j}{x_j}\geq\frac{y_{k+1}}{x_{k+1}} &\iff\frac{\sum_{i=1}^{k+1} x_i-B}{x_j}y_j\geq\frac{\sum_{i=1}^{k+1} x_i-B}{x_{k+1}}y_{k+1}\\
+    &\iff (1-\frac{B-\sum_{i\in\{1,\ldots,k+1\}\setminus\{j\}} x_i}{x_j})y_j\geq(1-\frac{B-\sum_{i=1}^k x_i}{x_{k+1}})y_{k+1}\\
+    &\iff y_j+\epsilon y_{k+1}\geq\alpha y_j+y_{k+1}.
+\end{align*}
+
+\begin{center}
+{\Large CSC373H1 - Ethics Module Assignment}
+\end{center}
+
+Construct the network with the set of nodes $\{s,t,v_1,\ldots,v_n,w_1,\ldots,w_m\}$, where each $v_i$ represents a country and each $w_r$ represents a warehouse, with the following edges:\begin{itemize}
+    \item $(s,w_r)$ with capacity $s_r$ for each $w_r$
+    \item $(v_i,t)$ with capacity $c_i$ for each $v_i$
+    \item $(w_r,v_i)$ with capacity $s_r$ if $(i,r)$ is in the list of pairs and $0$ otherwise
+\end{itemize}Then, the Ford-Fulkerson algorithm computes an integral maximal flow. We prove that there is a one-to-one correspondence between the flow of the network (not necessarily maximal) and total number of vaccines that can be allocated:\begin{itemize}
+    \item (Flow of $f$ in the network $\implies$ $f$ vaccines can be allocated) Assume there is a flow $f$ in the network. This means that $f$ moves from $s$ into the $(w_r,v_i)$ edges with positive capacities and then into $t$. Since each $w_r$ can receive at most $s_r$ flow from $s$ and each $v_i$ can send at most $c_i$ flow, each $(w_r,v_i)$ edge cannot have more than $\min(s_r,c_i)$ flow. Equivalently, since each warehouse can supply up to $s_j$ vaccines and each country can receive up to $c_i$ vaccines, it must be that each warehouse $j$ cannot send more than $\min(s_j,c_i)$ vaccines to a given country $i$. Additionally, if $(i,r)\notin$ the list of pairs, $(w_r,s_i)$ cannot send flow, which means warehouse $r$ does not send any vaccines to country $i$. Since the flow $f$ meets all constraints in the original problem, $f$ vaccines can therefore be allocated in total.
+    \item ($f$ vaccines can be allocated $\implies$ flow of $f$ in the network) Assume that $f$ vaccines can be allocated in total. Now, since each warehouse $r$ can supply up to $s_r$ doses in total and each country $i$ is willing to purchase up to $c_i$ doses, each warehouse $r$ cannot send more than $\min(s_r,c_i)$ vaccines to a given country $i$. In addition, each warehouse $r$ can only send vaccines to a country $i$ if $(i,r)\in$ the list of pairs. In the constructed network, this is exactly equivalent to how each $w_r$ can receive at most $s_r$ flow from $s$ and each $v_i$ can send at most $c_i$ flow to $t$, meaning each $(w_r,v_i)$ edge cannot carry a flow of more than $\min(s_r,c_i)$. Moreover, $(w_r,v_i)$ has positive flow only if $(i,r)\in$ the list of pairs. Thus, a flow of $f$ is feasible in the network.
+\end{itemize}This proves the one-to-one correspondence, meaning that maximizing the flow of the network is equivalent to maximizing the total number of vaccines that can be allocated, as desired.
+
+\end{document}
